@@ -1,2 +1,3 @@
-# SiteSee-pod_groundsdk_demo
+# SiteSee-pod-groundsdk
+
 CocoaPods -GroundSdk Demo App 
