@@ -466,7 +466,7 @@
 		7CECF2861D2A8E1A00BF5C84 /* ReturnHomePilotingItfCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReturnHomePilotingItfCell.swift; sourceTree = "<group>"; };
 		7CF4E8B920597FC100B5373B /* AntiflickerCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AntiflickerCell.swift; sourceTree = "<group>"; };
 		849ADAF2239AB1B100D9F722 /* GutmaLogManagerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GutmaLogManagerCell.swift; sourceTree = "<group>"; };
-		96E42666F050E37D92792A3F /* Pods-GroundSdkDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GroundSdkDemo.release.xcconfig"; path = "Target Support Files/Pods-GroundSdkDemo/Pods-GroundSdkDemo.release.xcconfig"; sourceTree = "<group>"; };
+		96E42666F050E37D92792A3F /* Pods-GroundSdkDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GroundSdkDemo.release.xcconfig"; path = "../../../../../don/GitHub/GroundSDK/Pods/Target Support Files/Pods-GroundSdkDemo/Pods-GroundSdkDemo.release.xcconfig"; sourceTree = "<group>"; };
 		9B044EA321FEFDFF00672794 /* ThermalBackgrountTemperatureVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThermalBackgrountTemperatureVC.swift; sourceTree = "<group>"; };
 		9B211A7021F8611000187592 /* ThermalPaletteAddColorVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThermalPaletteAddColorVC.swift; sourceTree = "<group>"; };
 		9B31E00721C947A7006F389E /* ThermalControlCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThermalControlCell.swift; sourceTree = "<group>"; };
@@ -534,7 +534,7 @@
 		9D93087A27CCE343007D9D12 /* SkyCtrlCellularLogs.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = SkyCtrlCellularLogs.storyboard; sourceTree = "<group>"; };
 		9D93087C27CCFE24007D9D12 /* SkyCtrlCellularLogsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkyCtrlCellularLogsViewController.swift; sourceTree = "<group>"; };
 		9DDE42692721D4A10062567A /* MediaStoreUploadViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaStoreUploadViewController.swift; sourceTree = "<group>"; };
-		CF81A475B11244A11059F474 /* Pods-GroundSdkDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GroundSdkDemo.debug.xcconfig"; path = "Target Support Files/Pods-GroundSdkDemo/Pods-GroundSdkDemo.debug.xcconfig"; sourceTree = "<group>"; };
+		CF81A475B11244A11059F474 /* Pods-GroundSdkDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GroundSdkDemo.debug.xcconfig"; path = "../../../../../don/GitHub/GroundSDK/Pods/Target Support Files/Pods-GroundSdkDemo/Pods-GroundSdkDemo.debug.xcconfig"; sourceTree = "<group>"; };
 		F708932E2534A32D0036AF2B /* SecureElementCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecureElementCell.swift; sourceTree = "<group>"; };
 		F70A52842525CE830042D96B /* FlightCameraRecorderCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlightCameraRecorderCell.swift; sourceTree = "<group>"; };
 		F73982F7247CFCEF00B5E5E6 /* BlendedThermalCameraCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BlendedThermalCameraCell.swift; path = GroundSdkDemo/DeviceInfoCells/BlendedThermalCameraCell.swift; sourceTree = SOURCE_ROOT; };
@@ -1204,10 +1204,16 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-GroundSdkDemo/Pods-GroundSdkDemo-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/ArsdkEngine/ArsdkEngine.framework",
+				"${BUILT_PRODUCTS_DIR}/GroundSdk/GroundSdk.framework",
+				"${PODS_ROOT}/SdkCore/SdkCore.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ArsdkEngine.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GroundSdk.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SdkCore.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
