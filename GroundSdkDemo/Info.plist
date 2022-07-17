@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>LSSupportsOpeningDocumentsInPlace</key>
-	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -31,23 +29,35 @@
 			<key>anafi4k</key>
 			<string>anafi4k_app_defaults</string>
 		</dict>
+		<key>ApplicationKey</key>
+		<string>$(GSDK_APPKEY)</string>
 		<key>BlackBox</key>
 		<false/>
-		<key>BlackboxPublicFolder</key>
-		<string></string>
+		<key>BlackBoxQuotaMb</key>
+		<integer>0</integer>
 		<key>BlackboxBufferCapacity</key>
 		<integer>60</integer>
-		<key>BlackBoxQuotaMb</key>
+		<key>BlackboxPublicFolder</key>
+		<string></string>
+		<key>CrashReportQuotaMb</key>
+		<integer>0</integer>
+		<key>DevToolbox</key>
+		<true/>
+		<key>FcrAnonymizerFqn</key>
+		<string>FcrAnonymizerDemo</string>
+		<key>FirmwareServer</key>
+		<string>$(GSDK_INTERNAL_UPDATE_URL)</string>
+		<key>FlightCameraRecordQuotaMb</key>
+		<integer>0</integer>
+		<key>FlightCameraRecordServer</key>
+		<string>$(GSDK_INTERNAL_FLIGHTCAMERARECORD_URL)</string>
+		<key>FlightDataQuotaMb</key>
 		<integer>0</integer>
 		<key>FlightLogQuotaMb</key>
 		<integer>0</integer>
-		<key>FlightCameraRecordQuotaMb</key>
-		<integer>0</integer>
-		<key>FlightDataQuotaMb</key>
-		<integer>0</integer>
+		<key>FlightLogServer</key>
+		<string>$(GSDK_INTERNAL_FLIGHTLOG_URL)</string>
 		<key>GutmaLogQuotaMb</key>
-		<integer>0</integer>
-		<key>CrashReportQuotaMb</key>
 		<integer>0</integer>
 		<key>SupportedDevices</key>
 		<array>
@@ -62,27 +72,30 @@
 			<string>skyCtrl4</string>
 			<string>skyCtrlUA</string>
 		</array>
-		<key>FirmwareServer</key>
-		<string>$(GSDK_INTERNAL_UPDATE_URL)</string>
-		<key>FlightLogServer</key>
-		<string>$(GSDK_INTERNAL_FLIGHTLOG_URL)</string>
-		<key>FlightCameraRecordServer</key>
-		<string>$(GSDK_INTERNAL_FLIGHTCAMERARECORD_URL)</string>
-		<key>ApplicationKey</key>
-		<string>$(GSDK_APPKEY)</string>
-		<key>DevToolbox</key>
-		<true/>
-		<key>FcrAnonymizerFqn</key>
-		<string>FcrAnonymizerDemo</string>
 	</dict>
 	<key>LSApplicationCategoryType</key>
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Add photos and videos</string>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_arsdk-mux._tcp.</string>
+		<string>_arsdk-0919._udp.</string>
+		<string>_arsdk-091a._udp.</string>
+		<string>_arsdk-091e._udp.</string>
+		<string>_arsdk-091b._udp.</string>
+		<string>_arsdk-0914._udp.</string>
+	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>camera authorization - for HMD</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>We need to access your local network to detect your drone over WiFi</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Your app uses Location for navigation and followMe functions</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Add photos and videos</string>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -111,18 +124,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>NSLocalNetworkUsageDescription</key>
-	<string>We need to access your local network to detect your drone over WiFi</string>
-	<key>NSBonjourServices</key>
-	<array>
-		<string>_arsdk-mux._tcp.</string>
-		<string>_arsdk-0919._udp.</string>
-		<string>_arsdk-091a._udp.</string>
-		<string>_arsdk-091e._udp.</string>
-		<string>_arsdk-091b._udp.</string>
-		<string>_arsdk-0914._udp.</string>
-	</array>
-	<key>NSCameraUsageDescription</key>
-	<string>camera authorization - for HMD</string>
 </dict>
 </plist>
