@@ -1,4 +1,4 @@
-// Copyright (C) 2020 Parrot Drones SAS
+// Copyright (C) 2022 Parrot Drones SAS
 //
 //    Redistribution and use in source and binary forms, with or without
 //    modification, are permitted provided that the following conditions
@@ -30,42 +30,33 @@
 import UIKit
 import GroundSdk
 
-class FlightCameraRecorderCell: PeripheralProviderContentCell {
+class RcInstrumentsViewController: RemoteControlProviderTableViewController {
 
-    @IBOutlet weak var idLabel: UILabel!
-    @IBOutlet weak var switchLabel: UILabel!
-    @IBOutlet weak var startStopButton: UIButton!
+    override func viewDidLoad() {
+        super.viewDidLoad()
 
-    private var flightCameraRecorder: Ref<FlightCameraRecorder>?
+        guard remoteControl != nil else {
+            return
+        }
+        // Instruments identifiers, sorted
+        let cellIdentifiers = [
+            // Instruments
+            "batteryInfo",
+            "cellularLinkStatus",
+            "cellularLogs",
+            "compass"
+        ]
+        loadDataSource(cellIdentifiers: cellIdentifiers)
 
-    override func set(peripheralProvider provider: PeripheralProvider) {
-        super.set(peripheralProvider: provider)
-        flightCameraRecorder = provider.getPeripheral(Peripherals.flightCameraRecorder) { [unowned self] fcr in
-            if let flightCameraRecorder = fcr {
-                if flightCameraRecorder.pipelines.id == 0 {
-                    self.switchLabel.text = "disabled"
-                    self.startStopButton.setTitle("Enable", for: .normal)
-                } else {
-                    self.switchLabel.text = "enabled"
-                    self.startStopButton.setTitle("Disable", for: .normal)
+        // force initContent on each cell so that its isVisible property gets updated
+        dataSource.forEach { (_: String, cells: [DeviceContentCell]) in
+            cells.forEach { cell in
+                if let instrumentCell = cell as? InstrumentProviderContentCell {
+                    instrumentCell.initContent(forIndexPath: indexPath(forCellIdentifier: cell.identifier),
+                                               provider: remoteControl!,
+                                               delegate: self)
                 }
-                self.show()
-            } else {
-                self.hide()
             }
         }
     }
-
-    @IBAction func activateOrDeactivaAction(_ sender: Any) {
-        if let flightCameraRecorder = flightCameraRecorder?.value {
-            if flightCameraRecorder.pipelines.id == 0 {
-                // Activate all supported
-                flightCameraRecorder.pipelines.id = UInt64.max
-            } else {
-                // Deactivate all
-                flightCameraRecorder.pipelines.id = 0
-            }
-        }
-    }
-
 }

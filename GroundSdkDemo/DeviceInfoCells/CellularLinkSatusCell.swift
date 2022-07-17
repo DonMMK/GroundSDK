@@ -33,15 +33,16 @@ import GroundSdk
 class CellularLinkStatusCell: InstrumentProviderContentCell {
 
     @IBOutlet weak var status: UILabel!
-    private var cellularLinkStatus: Ref<CellularLinkStatus>?
+    private var cellularLinkStatusRef: Ref<CellularLinkStatus>?
 
     override func set(instrumentProvider provider: InstrumentProvider) {
         super.set(instrumentProvider: provider)
-        cellularLinkStatus =
-            provider.getInstrument(Instruments.cellularLinkStatus) { [unowned self] cellularLinkStatus in
+
+        cellularLinkStatusRef = provider
+            .getInstrument(Instruments.cellularLinkStatus) { [unowned self] cellularLinkStatus in
+                status.text = cellularLinkStatus?.status?.description ?? "-"
                 if cellularLinkStatus != nil {
                     show()
-                    status.text = cellularLinkStatus?.status?.description ?? "-"
                 } else {
                     hide()
                 }

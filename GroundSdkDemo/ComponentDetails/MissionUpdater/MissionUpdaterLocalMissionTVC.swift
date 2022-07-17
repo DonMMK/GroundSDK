@@ -41,6 +41,10 @@ class MissionUpdaterOverwriteCell: UITableViewCell {
     @IBOutlet weak var overwriteSwitch: UISwitch!
 }
 
+class MissionUpdaterPostponeCell: UITableViewCell {
+    @IBOutlet weak var postponeSwitch: UISwitch!
+}
+
 class MissionUpdaterLocalMissionTVC: UITableViewController, DeviceViewController {
     private let groundSdk = GroundSdk()
     private var droneUid: String?
@@ -49,6 +53,7 @@ class MissionUpdaterLocalMissionTVC: UITableViewController, DeviceViewController
     private var missionUpdater: MissionUpdater?
     private var missionUploadTag: Int?
     private var overwriteBool: Bool = true
+    private var postponeValue: Bool = false
 
     func setDeviceUid(_ uid: String) {
         droneUid = uid
@@ -79,11 +84,19 @@ class MissionUpdaterLocalMissionTVC: UITableViewController, DeviceViewController
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "OverwriteCell", for: indexPath)
-            if let cell = cell as? MissionUpdaterOverwriteCell {
-                cell.overwriteSwitch.isOn = overwriteBool
+            if indexPath.row == 0 {
+                let cell = tableView.dequeueReusableCell(withIdentifier: "OverwriteCell", for: indexPath)
+                if let cell = cell as? MissionUpdaterOverwriteCell {
+                    cell.overwriteSwitch.isOn = overwriteBool
+                }
+                return cell
+            } else {
+                let cell = tableView.dequeueReusableCell(withIdentifier: "PostponeCell", for: indexPath)
+                if let cell = cell as? MissionUpdaterPostponeCell {
+                    cell.postponeSwitch.isOn = postponeValue
+                }
+                return cell
             }
-            return cell
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "MissionUploadCell", for: indexPath)
 
@@ -105,7 +118,7 @@ class MissionUpdaterLocalMissionTVC: UITableViewController, DeviceViewController
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
-            return 1
+            return 2
         } else {
             return missions.count
         }
@@ -117,7 +130,7 @@ class MissionUpdaterLocalMissionTVC: UITableViewController, DeviceViewController
 
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if section == 0 {
-            return "files should be put in Documents/missions"
+            return "Files should be put in Documents/missions"
         } else {
             return "List of local files"
         }
@@ -138,11 +151,15 @@ class MissionUpdaterLocalMissionTVC: UITableViewController, DeviceViewController
         let finalPath = missionsFolderPath.appendingPathComponent(value)
 
         missionUploadTag = sender.tag
-        _ = missionUpdater?.upload(filePath: finalPath, overwrite: overwriteBool)
+        _ = missionUpdater?.upload(filePath: finalPath, overwrite: overwriteBool, postpone: postponeValue)
 
     }
 
     @IBAction func overwrite(_ sender: UISwitch) {
         overwriteBool = sender.isOn
+    }
+
+    @IBAction func postpone(_ sender: UISwitch) {
+        postponeValue = sender.isOn
     }
 }
