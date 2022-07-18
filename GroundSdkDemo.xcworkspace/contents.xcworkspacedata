@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Workspace
    version = "1.0">
+   <Group
+      location = "group:GroundSdkDemo/models"
+      name = "models">
+      <FileRef
+         location = "group:YOLOv3TinyInt8LUT.mlmodel">
+      </FileRef>
+      <FileRef
+         location = "group:yolov7-tiny-640.mlmodel">
+      </FileRef>
+      <FileRef
+         location = "group:yolov7-640.mlmodel">
+      </FileRef>
+   </Group>
    <FileRef
       location = "group:GroundSdkDemo.xcodeproj">
    </FileRef>

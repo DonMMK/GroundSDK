@@ -29,6 +29,8 @@
 
 import UIKit
 import GroundSdk
+import CoreML
+import Vision
 
 class VideoStreamViewController: UIViewController, DeviceViewController {
 
@@ -51,6 +53,10 @@ class VideoStreamViewController: UIViewController, DeviceViewController {
     private var cameraLive: Ref<CameraLive>?
 
     private var lastMaxIndex = 0
+    
+    private var modelUrls: [URL]!
+    private var selectedVNModel: VNCoreMLModel?
+    private var selectedModel: MLModel?
 
     func setDeviceUid(_ uid: String) {
         droneUid = uid
@@ -116,6 +122,43 @@ class VideoStreamViewController: UIViewController, DeviceViewController {
         streamView.setStream(stream: nil)
         streamServer = nil
         cameraLive = nil
+    }
+    
+    private func MLmodelInit(){
+        
+//        let modelPaths = Bundle.main.paths(forResourcesOfType: "mlmodel", inDirectory: "models")
+//
+//        modelUrls = []
+//        for modelPath in modelPaths {
+//            let url = URL(fileURLWithPath: modelPath)
+//            let compiledUrl = try! MLModel.compileModel(at: url)
+//            modelUrls.append(compiledUrl)
+//        }
+//        loadData(url: <#T##URL#>, completion: <#T##(Data?, Error?) -> Void#>)
+        
+    }
+    
+    private func loadData(url: URL, completion: @escaping (Data?, Error?) -> Void) {
+        // Compute a path to the URL in the cache
+        let fileCachePath = FileManager.default.temporaryDirectory
+            .appendingPathComponent(
+                url.lastPathComponent,
+                isDirectory: false
+            )
+        
+        // If the image exists in the cache,
+        // load the image from the cache and exit
+//        if let data = Data(contentsOfFile: cachedFile.path) { // cached file ?? URL Location
+//            completion(data, nil)
+//            return
+//        }
+//        
+//        // If the image does not exist in the cache,
+//        // download the image to the cache
+//        download(url: url, toFile: cachedFile) { (error) in
+//            let data = Data(contentsOfFile: cachedFile.path)
+//            completion(data, error)
+//        }
     }
 
     @IBAction func actionZebra(_ sender: UISwitch) {
