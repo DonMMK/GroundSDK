@@ -225,6 +225,12 @@
 		9D93087B27CCE343007D9D12 /* SkyCtrlCellularLogs.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9D93087A27CCE343007D9D12 /* SkyCtrlCellularLogs.storyboard */; };
 		9D93087D27CCFE24007D9D12 /* SkyCtrlCellularLogsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D93087C27CCFE24007D9D12 /* SkyCtrlCellularLogsViewController.swift */; };
 		9DDE426A2721D4A10062567A /* MediaStoreUploadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DDE42692721D4A10062567A /* MediaStoreUploadViewController.swift */; };
+		F6E49EA628851BCE008CFAD7 /* MLModelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6E49EA528851BCE008CFAD7 /* MLModelViewController.swift */; };
+		F6E49EAB28851EB9008CFAD7 /* VideoCameraType.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6E49EA828851EB9008CFAD7 /* VideoCameraType.swift */; };
+		F6E49EAC28851EB9008CFAD7 /* VideoCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6E49EA928851EB9008CFAD7 /* VideoCapture.swift */; };
+		F6E49EAD28851EB9008CFAD7 /* AVCaptureDevice+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6E49EAA28851EB9008CFAD7 /* AVCaptureDevice+Extension.swift */; };
+		F6E49EB028851F04008CFAD7 /* ModelDescriptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6E49EAE28851F04008CFAD7 /* ModelDescriptionViewController.swift */; };
+		F6E49EB128851F04008CFAD7 /* BoundingBoxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6E49EAF28851F04008CFAD7 /* BoundingBoxView.swift */; };
 		F708932F2534A32D0036AF2B /* SecureElementCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708932E2534A32D0036AF2B /* SecureElementCell.swift */; };
 		F70A52852525CE830042D96B /* FlightCameraRecorderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70A52842525CE830042D96B /* FlightCameraRecorderCell.swift */; };
 		F73982F8247CFCF000B5E5E6 /* BlendedThermalCameraCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73982F7247CFCEF00B5E5E6 /* BlendedThermalCameraCell.swift */; };
@@ -535,6 +541,12 @@
 		9D93087C27CCFE24007D9D12 /* SkyCtrlCellularLogsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkyCtrlCellularLogsViewController.swift; sourceTree = "<group>"; };
 		9DDE42692721D4A10062567A /* MediaStoreUploadViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaStoreUploadViewController.swift; sourceTree = "<group>"; };
 		CF81A475B11244A11059F474 /* Pods-GroundSdkDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GroundSdkDemo.debug.xcconfig"; path = "../../../../../don/GitHub/GroundSDK/Pods/Target Support Files/Pods-GroundSdkDemo/Pods-GroundSdkDemo.debug.xcconfig"; sourceTree = "<group>"; };
+		F6E49EA528851BCE008CFAD7 /* MLModelViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MLModelViewController.swift; sourceTree = "<group>"; };
+		F6E49EA828851EB9008CFAD7 /* VideoCameraType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoCameraType.swift; sourceTree = "<group>"; };
+		F6E49EA928851EB9008CFAD7 /* VideoCapture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoCapture.swift; sourceTree = "<group>"; };
+		F6E49EAA28851EB9008CFAD7 /* AVCaptureDevice+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AVCaptureDevice+Extension.swift"; sourceTree = "<group>"; };
+		F6E49EAE28851F04008CFAD7 /* ModelDescriptionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelDescriptionViewController.swift; sourceTree = "<group>"; };
+		F6E49EAF28851F04008CFAD7 /* BoundingBoxView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoundingBoxView.swift; sourceTree = "<group>"; };
 		F708932E2534A32D0036AF2B /* SecureElementCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecureElementCell.swift; sourceTree = "<group>"; };
 		F70A52842525CE830042D96B /* FlightCameraRecorderCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlightCameraRecorderCell.swift; sourceTree = "<group>"; };
 		F73982F7247CFCEF00B5E5E6 /* BlendedThermalCameraCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BlendedThermalCameraCell.swift; path = GroundSdkDemo/DeviceInfoCells/BlendedThermalCameraCell.swift; sourceTree = SOURCE_ROOT; };
@@ -954,7 +966,11 @@
 			isa = PBXGroup;
 			children = (
 				70327894243B638D00D973DA /* proto */,
+				F6E49EA728851EB9008CFAD7 /* VideoCapture */,
+				F6E49EAF28851F04008CFAD7 /* BoundingBoxView.swift */,
+				F6E49EAE28851F04008CFAD7 /* ModelDescriptionViewController.swift */,
 				7CA1C9A01C807D5000FE9ED4 /* Info.plist */,
+				F6E49EA528851BCE008CFAD7 /* MLModelViewController.swift */,
 				7CA1C9941C807D5000FE9ED4 /* AppDelegate.swift */,
 				7C6BD87A1D47626A005D415A /* BoolSettingView.swift */,
 				7CA1C9961C807D5000FE9ED4 /* DevicesListViewController.swift */,
@@ -1011,6 +1027,16 @@
 				9B5D6AE023D5C19300AA08C3 /* TargetView.swift */,
 			);
 			path = OnboardTracker;
+			sourceTree = "<group>";
+		};
+		F6E49EA728851EB9008CFAD7 /* VideoCapture */ = {
+			isa = PBXGroup;
+			children = (
+				F6E49EA828851EB9008CFAD7 /* VideoCameraType.swift */,
+				F6E49EA928851EB9008CFAD7 /* VideoCapture.swift */,
+				F6E49EAA28851EB9008CFAD7 /* AVCaptureDevice+Extension.swift */,
+			);
+			path = VideoCapture;
 			sourceTree = "<group>";
 		};
 		F7A37C5D24D1B24D000E2869 /* MissionHelloDrone */ = {
@@ -1303,6 +1329,7 @@
 				9B9EDA62220AE18C009CC3F9 /* ThermalCameraCaptureIntervalVC.swift in Sources */,
 				0244B4DA2056D0A300B701B1 /* PointOfInterestPilotingItfCell.swift in Sources */,
 				9B5A7B7F24100AA6008D88AD /* MissionManagerDetailCell.swift in Sources */,
+				F6E49EA628851BCE008CFAD7 /* MLModelViewController.swift in Sources */,
 				7C7CF4E01D183717000BB8FC /* AltimeterCell.swift in Sources */,
 				F8B2402F1FE27EE60092974F /* BlackBoxReporterCell.swift in Sources */,
 				0237585C209D9F390077F63C /* FlightDataDownloaderCell.swift in Sources */,
@@ -1369,6 +1396,7 @@
 				712A9F5A22045EEB00BD4DFC /* FileReplayViewController.swift in Sources */,
 				9B50C46C2487DE4F00D9B229 /* MissionUpdaterCell.swift in Sources */,
 				9B31E00A21C947CE006F389E /* ThermalControlViewController.swift in Sources */,
+				F6E49EAD28851EB9008CFAD7 /* AVCaptureDevice+Extension.swift in Sources */,
 				9B50C46A2487CDB300D9B229 /* MissionUpdaterLocalMissionTVC.swift in Sources */,
 				9B5F2C6B244F2283008CAC34 /* AnimationsViewController.swift in Sources */,
 				029075FF1FE2E49500DED655 /* GuidedPilotingItfViewController.swift in Sources */,
@@ -1398,6 +1426,7 @@
 				F828A4B61F0162FA00431860 /* WifiAccessPointViewController.swift in Sources */,
 				9BF5448D22BA3D1D00452895 /* CopilotViewController.swift in Sources */,
 				681A967522147CFF00172594 /* ThermalStreamCell.swift in Sources */,
+				F6E49EAB28851EB9008CFAD7 /* VideoCameraType.swift in Sources */,
 				2DFA73732837C04F0001626B /* DeviceInfoViewController.swift in Sources */,
 				2DFA73752837C6610001626B /* RcPeripheralsViewController.swift in Sources */,
 				2DE1986B272C4AF500C19B3D /* vmeta.pb.swift in Sources */,
@@ -1424,6 +1453,7 @@
 				708D7D70213E87E9009DBD12 /* FlightLogReporterCell.swift in Sources */,
 				2D26646E282E9E470030AE5C /* DronePilotingInterfacesViewController.swift in Sources */,
 				02D39E1C207D03B200494EC4 /* TargetTrackerCell.swift in Sources */,
+				F6E49EB028851F04008CFAD7 /* ModelDescriptionViewController.swift in Sources */,
 				F803489020935254001F14BD /* MediaStoreDeleteAllViewController.swift in Sources */,
 				9BB4FBBE21E88A73005E2E58 /* ThermalCameraExposureLockViewController.swift in Sources */,
 				9B5B360724E3DB6800870B93 /* FlightCameraRecordReporterCell.swift in Sources */,
@@ -1440,6 +1470,7 @@
 				F89A06451EDEC4E40069ACD4 /* FlightPlanPilotingItfCell.swift in Sources */,
 				9B40FAD721620F5F00CF6690 /* PreciseHomeViewController.swift in Sources */,
 				7C5F9D271DEC420200E846D8 /* MediaStoreViewController.swift in Sources */,
+				F6E49EAC28851EB9008CFAD7 /* VideoCapture.swift in Sources */,
 				9B50C4662487C9AD00D9B229 /* MissionUpdaterDetailCell.swift in Sources */,
 				7C32DDE21F03B1C700B9E8F9 /* LiveStreamController.swift in Sources */,
 				029075FA1FE2950900DED655 /* GuidedPilotingItfCell.swift in Sources */,
@@ -1456,6 +1487,7 @@
 				F8123B5E200DFC380071672B /* RemovableUserStorageCell.swift in Sources */,
 				9B5A7B7D241003DF008D88AD /* MissionManagerViewController.swift in Sources */,
 				F8D32CB91EF01DD800074795 /* BatteryInfoCell.swift in Sources */,
+				F6E49EB128851F04008CFAD7 /* BoundingBoxView.swift in Sources */,
 				F8A3D0D32051977600AF0126 /* GimbalCell.swift in Sources */,
 				2D266470282E9F450030AE5C /* DronePeripheralsViewController.swift in Sources */,
 				F828A4B11F01508E00431860 /* WifiAccessPoint.swift in Sources */,

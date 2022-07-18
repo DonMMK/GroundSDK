@@ -126,14 +126,14 @@ class VideoStreamViewController: UIViewController, DeviceViewController {
     
     private func MLmodelInit(){
         
-//        let modelPaths = Bundle.main.paths(forResourcesOfType: "mlmodel", inDirectory: "models")
-//
-//        modelUrls = []
-//        for modelPath in modelPaths {
-//            let url = URL(fileURLWithPath: modelPath)
-//            let compiledUrl = try! MLModel.compileModel(at: url)
-//            modelUrls.append(compiledUrl)
-//        }
+        let modelPaths = Bundle.main.paths(forResourcesOfType: "mlmodel", inDirectory: "models")
+
+        modelUrls = []
+        for modelPath in modelPaths {
+            let url = URL(fileURLWithPath: modelPath)
+            let compiledUrl = try! MLModel.compileModel(at: url)
+            modelUrls.append(compiledUrl)
+        }
 //        loadData(url: <#T##URL#>, completion: <#T##(Data?, Error?) -> Void#>)
         
     }
@@ -152,7 +152,7 @@ class VideoStreamViewController: UIViewController, DeviceViewController {
 //            completion(data, nil)
 //            return
 //        }
-//        
+//
 //        // If the image does not exist in the cache,
 //        // download the image to the cache
 //        download(url: url, toFile: cachedFile) { (error) in
