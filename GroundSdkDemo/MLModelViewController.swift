@@ -19,7 +19,7 @@ class MLModelViewController: UIViewController {
     private var videoCapture: VideoCapture!
     private let serialQueue = DispatchQueue(label: "com.shu223.coremlplayground.serialqueue")
     
-    private let videoSize = CGSize(width: 1280, height: 720)
+    private let videoSize = CGSize(width: 640, height: 640)
     private let preferredFps: Int32 = 2
     
     private var modelUrls: [URL]!
