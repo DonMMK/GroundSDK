@@ -147,7 +147,7 @@ class CopterHudViewController: UIViewController, DeviceViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
+        MLModelAction()
         stopListeningToGamecontrollerNotifs()
         GamepadController.sharedInstance.droneUid = self.droneUid
     }
@@ -561,6 +561,11 @@ class CopterHudViewController: UIViewController, DeviceViewController {
             self, name: Notification.Name(rawValue: GamepadController.GamepadDidConnect), object: nil)
         NotificationCenter.default.removeObserver(
             self, name: Notification.Name(rawValue: GamepadController.GamepadDidDisconnect), object: nil)
+    }
+    
+    private func MLModelAction(){
+        print("Inside the \(#function)")
+        
     }
 
     @objc
