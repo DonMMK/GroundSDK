@@ -5,13 +5,13 @@
       location = "group:GroundSdkDemo/models"
       name = "models">
       <FileRef
+         location = "group:yolov7tiny-640.mlmodel">
+      </FileRef>
+      <FileRef
          location = "group:YOLOv3TinyInt8LUT.mlmodel">
       </FileRef>
       <FileRef
          location = "group:yolov7-tiny-640.mlmodel">
-      </FileRef>
-      <FileRef
-         location = "group:yolov7-640.mlmodel">
       </FileRef>
    </Group>
    <FileRef
