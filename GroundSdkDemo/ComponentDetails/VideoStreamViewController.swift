@@ -124,42 +124,42 @@ class VideoStreamViewController: UIViewController, DeviceViewController {
         cameraLive = nil
     }
     
-    private func MLmodelInit(){
-        
-        let modelPaths = Bundle.main.paths(forResourcesOfType: "mlmodel", inDirectory: "models")
-
-        modelUrls = []
-        for modelPath in modelPaths {
-            let url = URL(fileURLWithPath: modelPath)
-            let compiledUrl = try! MLModel.compileModel(at: url)
-            modelUrls.append(compiledUrl)
-        }
-//        loadData(url: <#T##URL#>, completion: <#T##(Data?, Error?) -> Void#>)
-        
-    }
-    
-    private func loadData(url: URL, completion: @escaping (Data?, Error?) -> Void) {
-        // Compute a path to the URL in the cache
-        let fileCachePath = FileManager.default.temporaryDirectory
-            .appendingPathComponent(
-                url.lastPathComponent,
-                isDirectory: false
-            )
-        
-        // If the image exists in the cache,
-        // load the image from the cache and exit
-//        if let data = Data(contentsOfFile: cachedFile.path) { // cached file ?? URL Location
-//            completion(data, nil)
-//            return
-//        }
+//    private func MLmodelInit(){
 //
-//        // If the image does not exist in the cache,
-//        // download the image to the cache
-//        download(url: url, toFile: cachedFile) { (error) in
-//            let data = Data(contentsOfFile: cachedFile.path)
-//            completion(data, error)
+//        let modelPaths = Bundle.main.paths(forResourcesOfType: "mlmodel", inDirectory: "models")
+//
+//        modelUrls = []
+//        for modelPath in modelPaths {
+//            let url = URL(fileURLWithPath: modelPath)
+//            let compiledUrl = try! MLModel.compileModel(at: url)
+//            modelUrls.append(compiledUrl)
 //        }
-    }
+////        loadData(url: <#T##URL#>, completion: <#T##(Data?, Error?) -> Void#>)
+//
+//    }
+//
+//    private func loadData(url: URL, completion: @escaping (Data?, Error?) -> Void) {
+//        // Compute a path to the URL in the cache
+//        let fileCachePath = FileManager.default.temporaryDirectory
+//            .appendingPathComponent(
+//                url.lastPathComponent,
+//                isDirectory: false
+//            )
+//
+//        // If the image exists in the cache,
+//        // load the image from the cache and exit
+////        if let data = Data(contentsOfFile: cachedFile.path) { // cached file ?? URL Location
+////            completion(data, nil)
+////            return
+////        }
+////
+////        // If the image does not exist in the cache,
+////        // download the image to the cache
+////        download(url: url, toFile: cachedFile) { (error) in
+////            let data = Data(contentsOfFile: cachedFile.path)
+////            completion(data, error)
+////        }
+//    }
 
     @IBAction func actionZebra(_ sender: UISwitch) {
         streamView.zebrasEnabled = sender.isOn
