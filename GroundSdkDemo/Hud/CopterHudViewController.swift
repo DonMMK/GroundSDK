@@ -31,6 +31,8 @@ import UIKit
 import GroundSdk
 import GameController
 import CoreLocation
+import CoreML
+import Vision
 
 class CopterHudViewController: UIViewController, DeviceViewController {
 
@@ -563,8 +565,11 @@ class CopterHudViewController: UIViewController, DeviceViewController {
             self, name: Notification.Name(rawValue: GamepadController.GamepadDidDisconnect), object: nil)
     }
     
+    /// Function called when stream view did appear. 
     private func MLModelAction(){
         print("Inside the \(#function)")
+        
+        
         
     }
 
