@@ -570,7 +570,6 @@ class CopterHudViewController: UIViewController, DeviceViewController {
         print("Inside the \(#function)")
         
         
-        
     }
 
     @objc
