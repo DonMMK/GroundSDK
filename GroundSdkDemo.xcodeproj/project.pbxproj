@@ -231,6 +231,7 @@
 		F6E49EAD28851EB9008CFAD7 /* AVCaptureDevice+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6E49EAA28851EB9008CFAD7 /* AVCaptureDevice+Extension.swift */; };
 		F6E49EB028851F04008CFAD7 /* ModelDescriptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6E49EAE28851F04008CFAD7 /* ModelDescriptionViewController.swift */; };
 		F6E49EB128851F04008CFAD7 /* BoundingBoxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6E49EAF28851F04008CFAD7 /* BoundingBoxView.swift */; };
+		F6F028DC288A3D9B00CDB640 /* yolov7-tiny-640.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = F6F028DB288A3D9B00CDB640 /* yolov7-tiny-640.mlmodel */; };
 		F708932F2534A32D0036AF2B /* SecureElementCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F708932E2534A32D0036AF2B /* SecureElementCell.swift */; };
 		F70A52852525CE830042D96B /* FlightCameraRecorderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70A52842525CE830042D96B /* FlightCameraRecorderCell.swift */; };
 		F73982F8247CFCF000B5E5E6 /* BlendedThermalCameraCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73982F7247CFCEF00B5E5E6 /* BlendedThermalCameraCell.swift */; };
@@ -547,6 +548,7 @@
 		F6E49EAA28851EB9008CFAD7 /* AVCaptureDevice+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AVCaptureDevice+Extension.swift"; sourceTree = "<group>"; };
 		F6E49EAE28851F04008CFAD7 /* ModelDescriptionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelDescriptionViewController.swift; sourceTree = "<group>"; };
 		F6E49EAF28851F04008CFAD7 /* BoundingBoxView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoundingBoxView.swift; sourceTree = "<group>"; };
+		F6F028DB288A3D9B00CDB640 /* yolov7-tiny-640.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = "yolov7-tiny-640.mlmodel"; sourceTree = "<group>"; };
 		F708932E2534A32D0036AF2B /* SecureElementCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecureElementCell.swift; sourceTree = "<group>"; };
 		F70A52842525CE830042D96B /* FlightCameraRecorderCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlightCameraRecorderCell.swift; sourceTree = "<group>"; };
 		F73982F7247CFCEF00B5E5E6 /* BlendedThermalCameraCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BlendedThermalCameraCell.swift; path = GroundSdkDemo/DeviceInfoCells/BlendedThermalCameraCell.swift; sourceTree = SOURCE_ROOT; };
@@ -944,6 +946,7 @@
 		7CA1C9881C807D5000FE9ED4 = {
 			isa = PBXGroup;
 			children = (
+				F6F028DA288A3CF100CDB640 /* models */,
 				7C69F8261FC88C9D00838162 /* Podfile */,
 				7C29CB5A1D58E09E006BF0BE /* .swiftlint.yml */,
 				7CA1C9BD1C807DD700FE9ED4 /* config.xcconfig */,
@@ -1037,6 +1040,14 @@
 				F6E49EAA28851EB9008CFAD7 /* AVCaptureDevice+Extension.swift */,
 			);
 			path = VideoCapture;
+			sourceTree = "<group>";
+		};
+		F6F028DA288A3CF100CDB640 /* models */ = {
+			isa = PBXGroup;
+			children = (
+				F6F028DB288A3D9B00CDB640 /* yolov7-tiny-640.mlmodel */,
+			);
+			path = models;
 			sourceTree = "<group>";
 		};
 		F7A37C5D24D1B24D000E2869 /* MissionHelloDrone */ = {
@@ -1333,6 +1344,7 @@
 				7C7CF4E01D183717000BB8FC /* AltimeterCell.swift in Sources */,
 				F8B2402F1FE27EE60092974F /* BlackBoxReporterCell.swift in Sources */,
 				0237585C209D9F390077F63C /* FlightDataDownloaderCell.swift in Sources */,
+				F6F028DC288A3D9B00CDB640 /* yolov7-tiny-640.mlmodel in Sources */,
 				686583CF231FBF5000272549 /* RadioControlViewController.swift in Sources */,
 				02F39FF620AB46900058890D /* UserAccountCell.swift in Sources */,
 				70D5A0E22576ACD900958BF7 /* MultiStreamViewController.swift in Sources */,
