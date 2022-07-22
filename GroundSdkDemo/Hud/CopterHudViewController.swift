@@ -34,6 +34,10 @@ import CoreLocation
 import CoreML
 import Vision
 
+import CoreImage
+
+typealias CameraData = Vmeta_TimedMetadata
+
 class CopterHudViewController: UIViewController, DeviceViewController {
 
     private let groundSdk = GroundSdk()
@@ -76,6 +80,9 @@ class CopterHudViewController: UIViewController, DeviceViewController {
     private var streamServer: Ref<StreamServer>?
     private var cameraLive: Ref<CameraLive>?
 
+    
+    var streamSink: StreamSink?
+    
     private var refLocation: Ref<UserLocation>?
 
     private var lastDroneLocation: CLLocation?
@@ -250,14 +257,119 @@ class CopterHudViewController: UIViewController, DeviceViewController {
             streamServer?.enabled = true
         }
         if let streamServer = streamServer {
-            cameraLive = streamServer.value?.live { stream in
+            cameraLive = streamServer.value?.live { stream in  //(source: .frontCamera)
                 self.streamView.setStream(stream: stream)
+                
+                let sinkConfig = YuvSinkCore.config(queue: DispatchQueue.main, listener: self)
+                self.streamSink = stream?.openSink(config: sinkConfig)
+                print("Sitesee Create and Open Sink")
                 _ = stream?.play()
             }
         }
 #endif
     }
 
+    
+    private var modelUrls: [URL]!
+    private var selectedVNModel: VNCoreMLModel?
+    private var selectedModel: MLModel?
+        
+    func setUpMLModel() {
+        if #available(iOS 13.0, *) {
+            selectedModel = try? yolov7_tiny_640(configuration: MLModelConfiguration()).model
+            print("Sitesee Open Model: \(String(describing: selectedModel))")
+            selectedVNModel = try? VNCoreMLModel(for: selectedModel!)
+            print("Sitesee VNModel \(String(describing: selectedVNModel))")
+        }
+    }
+    
+        
+    private func runModel() {
+        
+        let documentDirectory = FileManager.SearchPathDirectory.documentDirectory
+
+            let userDomainMask = FileManager.SearchPathDomainMask.userDomainMask
+            let paths = NSSearchPathForDirectoriesInDomains(documentDirectory, userDomainMask, true)
+
+            if let dirPath = paths.first {
+                let imageUrl = URL(fileURLWithPath: dirPath).appendingPathComponent("JPEG image.jpeg")
+                print(imageUrl)
+                guard let image = UIImage(contentsOfFile: imageUrl.path) else {print("Sitesee No Image"); return}
+                print("Sitesee Original Image: \(image.size)")
+                
+//                let imageData = image.jpegData(compressionQuality: 0.5)
+//                guard let newImage = resize_image(image: image, resize_target: 640) else { print("Sitesee No Resize Image"); return}
+//                print("Sitesee: NewResize Image: \(newImage.size)")
+                
+                let handler = VNImageRequestHandler(cgImage: (image.cgImage)!)
+            
+                let request = VNCoreMLRequest(model: selectedVNModel!, completionHandler: { (request, error) in
+                            print("Sitesee runModel Request: \(request)")
+                            print("Sitesee runModel Error: \(error)")
+                })
+                    
+                do {
+                    try handler.perform([request])
+                    
+                    let observation = request.results?.first
+                    print("Sitesee ML Results: \(observation)")
+                } catch {
+                    print(error)
+                }
+                
+            }
+
+    }
+    
+    let sharedContext = CIContext(options: [.useSoftwareRenderer : false])
+    
+    func resize_image(image: UIImage, resize_target: CGFloat) -> UIImage? {
+        let h = image.size.height
+        let w = image.size.width
+        let image_max = max(h, w)
+        let scale = resize_target / image_max
+        let aspectRatio = 3/4
+                
+        let filter = CIFilter(name: "CILanczosScaleTransform")
+            filter?.setValue(image, forKey: kCIInputImageKey)
+            filter?.setValue(scale, forKey: kCIInputScaleKey)
+            filter?.setValue(aspectRatio, forKey: kCIInputAspectRatioKey)
+
+            guard let outputCIImage = filter?.outputImage,
+                let outputCGImage = sharedContext.createCGImage(outputCIImage,
+                                                                from: outputCIImage.extent)
+            else {
+                return nil
+            }
+        let image_resized = UIImage(cgImage: outputCGImage)
+         
+//      padding image to keep aspect-ratio
+        return padding_img(image_resized: image_resized, background_color: (0,0,0))
+    }
+    
+    func padding_img(image_resized: UIImage, background_color: (Int, Int, Int)) -> UIImage {
+        let width = image_resized.size.width
+        let height = image_resized.size.height
+        
+        let result = UIImage()
+        
+        if width == height {
+            return image_resized
+        }
+        
+        else if width > height {
+//            result = Image.new(image_resized.mode, (width, width), background_color)
+//            result.paste(image_resized, (0, (width - height) // 2))
+            return result
+        }
+                                         
+        else {
+//            result = Image.new(image_resized.mode, (height, height), background_color)
+//            result.paste(image_resized, ((height - width) // 2, 0))
+            return result
+        }
+    }
+    
     private func dropAllInstruments() {
         flyingIndicators = nil
         alarms = nil
@@ -565,11 +677,12 @@ class CopterHudViewController: UIViewController, DeviceViewController {
             self, name: Notification.Name(rawValue: GamepadController.GamepadDidDisconnect), object: nil)
     }
     
-    /// Function called when stream view did appear. 
+    /// Function called when stream view did appear.
     private func MLModelAction(){
         print("Inside the \(#function)")
         
-        
+        setUpMLModel()
+        runModel()
     }
 
     @objc
@@ -592,4 +705,40 @@ class CopterHudViewController: UIViewController, DeviceViewController {
     private func dropFacilities() {
         refLocation = nil
     }
+}
+
+
+extension CopterHudViewController: YuvSinkListener {
+    func frameReady(sink: StreamSink, frame: SdkCoreFrame) {
+        print("Sitesee YUVSinkListener FRAME READY")
+        
+        guard let metadataProtobuf = frame.metadataProtobuf else { return }
+        print("Sitesee:  \(metadataProtobuf)")
+        
+        do {
+            let decodedInfo = try CameraData(serializedData: Data(metadataProtobuf))
+//            print("Sitesee YUVSink INFOPanel - decodedInfo: \(decodedInfo)") // Prints the data continously
+            
+            if let frameData = frame.data {
+                let data2 = Data(bytesNoCopy: UnsafeMutableRawPointer(mutating: frameData), count: frame.len, deallocator: .none )
+                
+//                UIImage(data: data2)
+                
+            }
+        }
+        catch {}
+        
+        
+        
+    }
+    
+    func didStart(sink: StreamSink) {
+        print("Sitesee Did Start YUVSinkListener")
+    }
+    
+    func didStop(sink: StreamSink) {
+        print("Sitesee Did Stop YUVSinkListener")
+    }
+    
+    
 }
