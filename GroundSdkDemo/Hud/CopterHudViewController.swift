@@ -35,6 +35,7 @@ import CoreML
 import Vision
 
 import CoreImage
+import AVFoundation
 
 typealias CameraData = Vmeta_TimedMetadata
 
@@ -284,7 +285,7 @@ class CopterHudViewController: UIViewController, DeviceViewController {
     }
     
         
-    private func runModel() {
+    private func runModel(data2: Data) {
         
         let documentDirectory = FileManager.SearchPathDirectory.documentDirectory
 
@@ -300,13 +301,18 @@ class CopterHudViewController: UIViewController, DeviceViewController {
 //                guard let newImage = resize_image(image: image, resize_target: 640) else { print("Sitesee No Resize Image"); return}
 //                print("Sitesee: NewResize Image: \(newImage.size)")
                 
-                let handler = VNImageRequestHandler(cgImage: (image.cgImage)!)
+                // Turn data2 into RGB
+                
+                //
+                let newimage = UIImage(data: data2)
+                let handler = VNImageRequestHandler(cgImage: (newimage.cgImage)!)
             
                 let request = VNCoreMLRequest(model: selectedVNModel!, completionHandler: { (request, error) in
                             print("Sitesee runModel Request: \(request)")
                             print("Sitesee runModel Error: \(error)")
                 })
-                    
+                
+                
                 do {
                     try handler.perform([request])
                     
@@ -320,10 +326,76 @@ class CopterHudViewController: UIViewController, DeviceViewController {
 
     }
     
+    @available(iOS 13.0, *)
+    /// pass in the data2 here and start the stream set up
     func runModelOnStream(){
         print("Inside the function: \(#function) ")
-    
+        
+//        DispatchQueue.global(qos: .background).async {
+//                // Initialize the coreML vision model, you can also use VGG16().model, or any other model that takes an image.
+//                guard let vnCoreModel = try? VNCoreMLModel(for: yolov7_tiny_640().model) else { return }
+//
+//                // Build the coreML vision request.
+//                let request = VNCoreMLRequest(model: vnCoreModel) { (request, error) in
+//                    // We get get an array of VNClassificationObservations back
+//                    // This has the fields "confidence", which is the score
+//                    // and "identifier" which is the recognized class
+//                    guard var results = request.results as? [VNClassificationObservation] else { fatalError("Failure") }
+//
+//                    // Filter out low scoring results.
+//                    results = results.filter({ $0.confidence > 0.01 })
+//
+//                    DispatchQueue.main.async {
+//                        completion(results)
+//                    }
+//                }
+//
+//                // Initialize the coreML vision request handler.
+//                let handler = VNImageRequestHandler(cgImage: )
+//
+//                // Perform the coreML vision request.
+//                do {
+//                    try handler.perform([request])
+//                } catch {
+//                    print("Error: \(error)")
+//                }
+//            }
+  
+        let session = AVCaptureSession()
+        CopterHudViewController.createImageClassifier()
+        //print("\(imageClassifierVisionModel)")
+        print("Finished exectuing function create Image Classifier")
+        
     }
+    
+    /// - Tag: name
+    @available(iOS 13.0, *)
+    static func createImageClassifier() -> VNCoreMLModel {
+        // Use a default model configuration.
+        let defaultConfig = MLModelConfiguration()
+
+        // Create an instance of the image classifier's wrapper class.
+        let imageClassifierWrapper = try? yolov7_tiny_640(configuration: defaultConfig);if #available(iOS 13.0, *) {
+            let imageClassifierWrapper = try? yolov7_tiny_640(configuration: defaultConfig)
+        } else {
+            // Fallback on earlier versions
+        }
+
+        guard let imageClassifier = imageClassifierWrapper else {
+            fatalError("App failed to create an image classifier model instance.")
+        }
+
+        // Get the underlying model instance.
+        let imageClassifierModel = imageClassifier.model
+
+        // Create a Vision instance using the image classifier's model instance.
+        guard let imageClassifierVisionModel = try? VNCoreMLModel(for: imageClassifierModel) else {
+            fatalError("App failed to create a `VNCoreMLModel` instance.")
+        }
+
+        return imageClassifierVisionModel
+    }
+    
     
 //    func getArrayOfBytesFromImage(imageData:NSData) -> NSMutableArray
 //    {
@@ -709,7 +781,11 @@ class CopterHudViewController: UIViewController, DeviceViewController {
         print("Inside the \(#function)")
         setUpMLModel()
         runModel()
-        runModelOnStream()
+        if #available(iOS 13.0, *) {
+            runModelOnStream()
+        } else {
+            // Fallback on earlier versions
+        }
         
     }
 
@@ -751,7 +827,7 @@ extension CopterHudViewController: YuvSinkListener {
                 let data2 = Data(bytesNoCopy: UnsafeMutableRawPointer(mutating: frameData), count: frame.len, deallocator: .none )
                 
 //                UIImage(data: data2)
-                
+                runModel(data: data2)
             }
         }
         catch {
