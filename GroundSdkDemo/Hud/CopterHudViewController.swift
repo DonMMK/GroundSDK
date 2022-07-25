@@ -292,11 +292,10 @@ class CopterHudViewController: UIViewController, DeviceViewController {
             let paths = NSSearchPathForDirectoriesInDomains(documentDirectory, userDomainMask, true)
 
             if let dirPath = paths.first {
-                let imageUrl = URL(fileURLWithPath: dirPath).appendingPathComponent("JPEG image.jpeg")
+                let imageUrl = URL(fileURLWithPath: dirPath).appendingPathComponent("image_frame_547.jpeg")
                 print(imageUrl)
                 guard let image = UIImage(contentsOfFile: imageUrl.path) else {print("Sitesee No Image"); return}
                 print("Sitesee Original Image: \(image.size)")
-                
 //                let imageData = image.jpegData(compressionQuality: 0.5)
 //                guard let newImage = resize_image(image: image, resize_target: 640) else { print("Sitesee No Resize Image"); return}
 //                print("Sitesee: NewResize Image: \(newImage.size)")
@@ -320,6 +319,34 @@ class CopterHudViewController: UIViewController, DeviceViewController {
             }
 
     }
+    
+    func runModelOnStream(){
+        print("Inside the function: \(#function) ")
+    
+    }
+    
+//    func getArrayOfBytesFromImage(imageData:NSData) -> NSMutableArray
+//    {
+//
+//        // the number of elements:
+//        let count = imageData.length / sizeof(UInt8)
+//
+//        // create array of appropriate length:
+//        var bytes = [UInt8](count: count, repeatedValue: 0)
+//
+//        // copy bytes into array
+//        imageData.getBytes(&bytes, length:count * sizeof(UInt8))
+//
+//        var byteArray:NSMutableArray = NSMutableArray()
+//
+//        for (var i = 0; i < count; i++) {
+//            byteArray.addObject(NSNumber(unsignedChar: bytes[i]))
+//        }
+//
+//        return byteArray
+//
+//
+//    }
     
     let sharedContext = CIContext(options: [.useSoftwareRenderer : false])
     
@@ -680,9 +707,10 @@ class CopterHudViewController: UIViewController, DeviceViewController {
     /// Function called when stream view did appear.
     private func MLModelAction(){
         print("Inside the \(#function)")
-        
         setUpMLModel()
         runModel()
+        runModelOnStream()
+        
     }
 
     @objc
@@ -726,7 +754,9 @@ extension CopterHudViewController: YuvSinkListener {
                 
             }
         }
-        catch {}
+        catch {
+            print("error handled in \(#function) where the data stream was accessed")
+        }
         
         
         
