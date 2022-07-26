@@ -33,6 +33,7 @@ import GameController
 import CoreLocation
 import CoreML
 import Vision
+import CoreGraphics
 
 import CoreImage
 import AVFoundation
@@ -287,6 +288,7 @@ class CopterHudViewController: UIViewController, DeviceViewController {
         
     private func runModel(data2: Data) {
         
+        // Accessing the document directory for the GroundSDK
         let documentDirectory = FileManager.SearchPathDirectory.documentDirectory
 
             let userDomainMask = FileManager.SearchPathDomainMask.userDomainMask
@@ -297,15 +299,47 @@ class CopterHudViewController: UIViewController, DeviceViewController {
                 print(imageUrl)
                 guard let image = UIImage(contentsOfFile: imageUrl.path) else {print("Sitesee No Image"); return}
                 print("Sitesee Original Image: \(image.size)")
-//                let imageData = image.jpegData(compressionQuality: 0.5)
-//                guard let newImage = resize_image(image: image, resize_target: 640) else { print("Sitesee No Resize Image"); return}
-//                print("Sitesee: NewResize Image: \(newImage.size)")
+                let imageData = image.jpegData(compressionQuality: 0.5)
+                guard let newImage = resize_image(image: image, resize_target: 640) else { print("Sitesee No Resize Image"); return}
+                print("Sitesee: NewResize Image: \(newImage.size)")
                 
-                // Turn data2 into RGB
+                /// TO DO: Turn data2 into RGB
                 
-                //
-                let newimage = UIImage(data: data2)
-                let handler = VNImageRequestHandler(cgImage: (newimage.cgImage)!)
+                let imsize = 1280*720
+                let newimage = UIImage(data: data2.prefix(upTo: imsize))
+                //let newimage = CGImageCreate(1280, 720, 8, 8, 8*1280, colorspace, CGBitmapInfo.byteOrderMask(), data2.prefix(through: imsize))   //data2.prefix(upTo: imsize))
+                
+                /// Jeremy's solution for passing data into ML Model (which has an input parameter of image)
+                /*
+                let data2: Data
+                let dataRGB: Data = getRGB(data2)
+                let im: CGImage = CGImage(
+                  width: 1280,
+                  height: 720,
+                  bitsPerComponent: 8,
+                  bitsPerPixel: 24,
+                  bytesPerRow: 1280 * 3,
+                  space: CGColorSpaceCreateDeviceRGB(),
+                  bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue,
+                  provider: data2 as CFData as! CGDataProvider,
+                  decode: nil,
+                  shouldInterpolate: false,
+                  intent: .defaultIntent
+                )!
+                
+                */
+                 
+                print("the image size is: \(newimage?.size)")
+                
+                if let pngData = newimage!.pngData()
+                {
+                   let path = URL(fileURLWithPath: dirPath).appendingPathComponent("SiteSeeImageNew.png")
+                    try? pngData.write(to: path)
+                    print("Saved the image")
+                }
+                
+                
+                let handler = VNImageRequestHandler(cgImage: (newimage?.cgImage)!)
             
                 let request = VNCoreMLRequest(model: selectedVNModel!, completionHandler: { (request, error) in
                             print("Sitesee runModel Request: \(request)")
@@ -328,9 +362,9 @@ class CopterHudViewController: UIViewController, DeviceViewController {
     
     @available(iOS 13.0, *)
     /// pass in the data2 here and start the stream set up
-    func runModelOnStream(){
-        print("Inside the function: \(#function) ")
-        
+//    func runModelOnStream(){
+//        print("Inside the function: \(#function) ")
+//        
 //        DispatchQueue.global(qos: .background).async {
 //                // Initialize the coreML vision model, you can also use VGG16().model, or any other model that takes an image.
 //                guard let vnCoreModel = try? VNCoreMLModel(for: yolov7_tiny_640().model) else { return }
@@ -360,13 +394,13 @@ class CopterHudViewController: UIViewController, DeviceViewController {
 //                    print("Error: \(error)")
 //                }
 //            }
-  
-        let session = AVCaptureSession()
-        CopterHudViewController.createImageClassifier()
-        //print("\(imageClassifierVisionModel)")
-        print("Finished exectuing function create Image Classifier")
-        
-    }
+//  
+//        let session = AVCaptureSession()
+//        CopterHudViewController.createImageClassifier()
+//        //print("\(imageClassifierVisionModel)")
+//        print("Finished exectuing function create Image Classifier")
+//        
+//    }
     
     /// - Tag: name
     @available(iOS 13.0, *)
@@ -419,6 +453,29 @@ class CopterHudViewController: UIViewController, DeviceViewController {
 //
 //
 //    }
+    
+    /*
+     
+     
+     if let image = UIImage(named: "example.jpg") {
+         if let data = image.jpegData(compressionQuality: 0.8) {
+             let filename = getDocumentsDirectory().appendingPathComponent("copy.png")
+             try? data.write(to: filename)
+         }
+     }
+     
+     
+     
+     func savePng(_ image: UIImage) {
+         if let pngData = image.pngData(),
+             let path = documentDirectoryPath()?.appendingPathComponent("examplePng.png") {
+             try? pngData.write(to: path)
+         }
+     }
+     
+     
+     
+     */
     
     let sharedContext = CIContext(options: [.useSoftwareRenderer : false])
     
@@ -780,7 +837,8 @@ class CopterHudViewController: UIViewController, DeviceViewController {
     private func MLModelAction(){
         print("Inside the \(#function)")
         setUpMLModel()
-        runModel()
+        print("Running function: runModel()")
+        //runModel(data2)
         if #available(iOS 13.0, *) {
             runModelOnStream()
         } else {
@@ -813,11 +871,12 @@ class CopterHudViewController: UIViewController, DeviceViewController {
 
 
 extension CopterHudViewController: YuvSinkListener {
+    
     func frameReady(sink: StreamSink, frame: SdkCoreFrame) {
         print("Sitesee YUVSinkListener FRAME READY")
         
         guard let metadataProtobuf = frame.metadataProtobuf else { return }
-        print("Sitesee:  \(metadataProtobuf)")
+        print("Sitesee metadata Protobuf:  \(metadataProtobuf)")
         
         do {
             let decodedInfo = try CameraData(serializedData: Data(metadataProtobuf))
@@ -825,9 +884,11 @@ extension CopterHudViewController: YuvSinkListener {
             
             if let frameData = frame.data {
                 let data2 = Data(bytesNoCopy: UnsafeMutableRawPointer(mutating: frameData), count: frame.len, deallocator: .none )
-                
+                print("Data2 is: \(data2)")
 //                UIImage(data: data2)
-                runModel(data: data2)
+                print("Doing the runmodel function now")
+                runModel(data2: data2)
+                
             }
         }
         catch {
