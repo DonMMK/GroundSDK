@@ -120,6 +120,9 @@ class CopterHudViewController: UIViewController, DeviceViewController {
     let landButtonImage = UIImage(named: "ic_flight_land_48pt")
     let handButtonImage = UIImage(named: "ic_flight_hand_48pt")
 
+    var frameCounter: Int = 0
+    var isProcessingFrame: Bool = false
+    
     func setDeviceUid(_ uid: String) {
         droneUid = uid
     }
@@ -259,7 +262,7 @@ class CopterHudViewController: UIViewController, DeviceViewController {
             streamServer?.enabled = true
         }
         if let streamServer = streamServer {
-            cameraLive = streamServer.value?.live { stream in  //(source: .frontCamera)
+            cameraLive = streamServer.value?.live(source: .frontCamera) { stream in
                 self.streamView.setStream(stream: stream)
                 
                 let sinkConfig = YuvSinkCore.config(queue: DispatchQueue.main, listener: self)
@@ -284,87 +287,106 @@ class CopterHudViewController: UIViewController, DeviceViewController {
             print("Sitesee VNModel \(String(describing: selectedVNModel))")
         }
     }
+
     
-        
-    private func runModel(data2: Data) {
+    func setUpURLPath() -> String? {
         
         // Accessing the document directory for the GroundSDK
         let documentDirectory = FileManager.SearchPathDirectory.documentDirectory
 
-            let userDomainMask = FileManager.SearchPathDomainMask.userDomainMask
-            let paths = NSSearchPathForDirectoriesInDomains(documentDirectory, userDomainMask, true)
-
-            if let dirPath = paths.first {
-                let imageUrl = URL(fileURLWithPath: dirPath).appendingPathComponent("image_frame_547.jpeg")
-                print(imageUrl)
-                guard let image = UIImage(contentsOfFile: imageUrl.path) else {print("Sitesee No Image"); return}
-                print("Sitesee Original Image: \(image.size)")
-                let imageData = image.jpegData(compressionQuality: 0.5)
-                guard let newImage = resize_image(image: image, resize_target: 640) else { print("Sitesee No Resize Image"); return}
-                print("Sitesee: NewResize Image: \(newImage.size)")
-                
-                /// TO DO: Turn data2 into RGB
-                
-                let imsize = 1280*720
-                let newimage = UIImage(data: data2.prefix(upTo: imsize))
-                //let newimage = CGImageCreate(1280, 720, 8, 8, 8*1280, colorspace, CGBitmapInfo.byteOrderMask(), data2.prefix(through: imsize))   //data2.prefix(upTo: imsize))
-                
-                /// Jeremy's solution for passing data into ML Model (which has an input parameter of image)
-                /*
-                let data2: Data
-                let dataRGB: Data = getRGB(data2)
-                let im: CGImage = CGImage(
-                  width: 1280,
-                  height: 720,
-                  bitsPerComponent: 8,
-                  bitsPerPixel: 24,
-                  bytesPerRow: 1280 * 3,
-                  space: CGColorSpaceCreateDeviceRGB(),
-                  bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue,
-                  provider: data2 as CFData as! CGDataProvider,
-                  decode: nil,
-                  shouldInterpolate: false,
-                  intent: .defaultIntent
-                )!
-                
-                */
-                 
-                print("the image size is: \(newimage?.size)")
-                
-                if let pngData = newimage!.pngData()
-                {
-                   let path = URL(fileURLWithPath: dirPath).appendingPathComponent("SiteSeeImageNew.png")
-                    try? pngData.write(to: path)
-                    print("Saved the image")
-                }
-                
-                
-                let handler = VNImageRequestHandler(cgImage: (newimage?.cgImage)!)
-            
-                let request = VNCoreMLRequest(model: selectedVNModel!, completionHandler: { (request, error) in
-                            print("Sitesee runModel Request: \(request)")
-                            print("Sitesee runModel Error: \(error)")
-                })
-                
-                
-                do {
-                    try handler.perform([request])
-                    
-                    let observation = request.results?.first
-                    print("Sitesee ML Results: \(observation)")
-                } catch {
-                    print(error)
-                }
-                
-            }
-
+        let userDomainMask = FileManager.SearchPathDomainMask.userDomainMask
+        let paths = NSSearchPathForDirectoriesInDomains(documentDirectory, userDomainMask, true)
+        return paths.first
     }
     
-    @available(iOS 13.0, *)
+    
+    func createImageFromImage(imageName: String) -> UIImage? {
+        let URLpath = setUpURLPath()
+        
+        if let URLpath = URLpath {
+            let imageUrl = URL(fileURLWithPath: URLpath).appendingPathComponent(imageName)
+
+            guard let newimage = UIImage(contentsOfFile: imageUrl.path) else {print("Sitesee No Image"); return nil }
+            print("Sitesee Image From File: \(imageName) , Size: \(newimage.size)")
+            let imageData = newimage.jpegData(compressionQuality: 1)
+            
+            return newimage
+        }
+        else { return nil }
+        
+    }
+        
+    func createImageFromData(data2: Data, save: Bool, saveImageName: String) -> UIImage? {
+
+//            guard let newImage = resize_image(image: image, resize_target: 640) else { print("Sitesee No Resize Image"); return (nil, dirPath )}
+//            print("Sitesee: NewResize Image: \(newImage.size)")
+        
+        print("DataInput: \(data2)")
+        
+        let cgProvider = CGDataProvider(data: data2 as CFData)
+
+        let im: CGImage = CGImage(
+          width: 640,
+          height: 640,
+          bitsPerComponent: 8,
+          bitsPerPixel: 32,
+          bytesPerRow: 640 * 4,
+          space: CGColorSpaceCreateDeviceRGB(),
+          bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.noneSkipFirst.rawValue),
+          provider: cgProvider!,
+          decode: nil,
+          shouldInterpolate: false,
+          intent: .defaultIntent
+        )!
+        
+        print("\(im.width), \(im.height)")
+        
+        let newimage = UIImage(cgImage: im)
+        
+        print("!!! Check !!!! New Data image size is: \(newimage.size)")
+        
+        if save == true, let pngData = newimage.pngData() {
+            let URLPath = setUpURLPath()
+            if let dirPath = URLPath {
+               let path = URL(fileURLWithPath: dirPath).appendingPathComponent(saveImageName)
+                try? pngData.write(to: path)
+                print("Saved the image: \(saveImageName)")
+            }
+        }
+        
+        return newimage
+    }
+    
+    
+    func runMLModel(image: UIImage?) {
+        print("Sitesee Run Model")
+        guard let newimage = image else { print("Sitesee No Image Provided"); return }
+
+        let handler = VNImageRequestHandler(cgImage: (newimage.cgImage!))
+        let request = VNCoreMLRequest(model: selectedVNModel!) { (request, error) in
+                    print("Sitesee runMLModel Request: \(request)")
+                    print("Sitesee runMLModel Error: \(error)")
+        }
+        
+        
+        do {
+            try handler.perform([request])
+            
+            let observation = request.results?.first
+            print("Sitesee ML Results: \(observation)")
+        } catch {
+            print(error)
+        }
+            
+    }
+
+    
+    
+//    @available(iOS 13.0, *)
     /// pass in the data2 here and start the stream set up
 //    func runModelOnStream(){
 //        print("Inside the function: \(#function) ")
-//        
+//
 //        DispatchQueue.global(qos: .background).async {
 //                // Initialize the coreML vision model, you can also use VGG16().model, or any other model that takes an image.
 //                guard let vnCoreModel = try? VNCoreMLModel(for: yolov7_tiny_640().model) else { return }
@@ -394,17 +416,17 @@ class CopterHudViewController: UIViewController, DeviceViewController {
 //                    print("Error: \(error)")
 //                }
 //            }
-//  
+//
 //        let session = AVCaptureSession()
 //        CopterHudViewController.createImageClassifier()
 //        //print("\(imageClassifierVisionModel)")
 //        print("Finished exectuing function create Image Classifier")
-//        
+//
 //    }
     
     /// - Tag: name
     @available(iOS 13.0, *)
-    static func createImageClassifier() -> VNCoreMLModel {
+    func createImageClassifier() -> VNCoreMLModel {
         // Use a default model configuration.
         let defaultConfig = MLModelConfiguration()
 
@@ -431,51 +453,19 @@ class CopterHudViewController: UIViewController, DeviceViewController {
     }
     
     
-//    func getArrayOfBytesFromImage(imageData:NSData) -> NSMutableArray
-//    {
-//
-//        // the number of elements:
-//        let count = imageData.length / sizeof(UInt8)
-//
-//        // create array of appropriate length:
-//        var bytes = [UInt8](count: count, repeatedValue: 0)
-//
-//        // copy bytes into array
-//        imageData.getBytes(&bytes, length:count * sizeof(UInt8))
-//
-//        var byteArray:NSMutableArray = NSMutableArray()
-//
-//        for (var i = 0; i < count; i++) {
-//            byteArray.addObject(NSNumber(unsignedChar: bytes[i]))
-//        }
-//
-//        return byteArray
-//
-//
-//    }
+    func calculateNewResolution(target_width: Double, target_height: Double, original_width: Double, original_height: Double) -> (w: Double, h: Double) {
+        
+        // This assumes the width is always larger
+        let aspectRatio = original_width / original_height
+        let new_width = target_width
+        let new_height = target_height / aspectRatio
+
+        let w = round(new_width) // selft explanatory function, right!
+        let h = round(new_height) // adjust the rounded width with height
+
+        return (w, h)
+    }
     
-    /*
-     
-     
-     if let image = UIImage(named: "example.jpg") {
-         if let data = image.jpegData(compressionQuality: 0.8) {
-             let filename = getDocumentsDirectory().appendingPathComponent("copy.png")
-             try? data.write(to: filename)
-         }
-     }
-     
-     
-     
-     func savePng(_ image: UIImage) {
-         if let pngData = image.pngData(),
-             let path = documentDirectoryPath()?.appendingPathComponent("examplePng.png") {
-             try? pngData.write(to: path)
-         }
-     }
-     
-     
-     
-     */
     
     let sharedContext = CIContext(options: [.useSoftwareRenderer : false])
     
@@ -524,6 +514,17 @@ class CopterHudViewController: UIViewController, DeviceViewController {
 //            result.paste(image_resized, ((height - width) // 2, 0))
             return result
         }
+    }
+    
+    func valueClip(inputValue: Double) -> Double {
+        let clipValue: Double
+        if 0...255 ~= inputValue {
+            clipValue = inputValue
+        } else {
+            clipValue = (inputValue < 0) ? 0 : 255
+        }
+        
+        return clipValue
     }
     
     private func dropAllInstruments() {
@@ -837,10 +838,10 @@ class CopterHudViewController: UIViewController, DeviceViewController {
     private func MLModelAction(){
         print("Inside the \(#function)")
         setUpMLModel()
-        print("Running function: runModel()")
+//        print("Running function: runModel()")
         //runModel(data2)
         if #available(iOS 13.0, *) {
-            runModelOnStream()
+//            runModelOnStream()
         } else {
             // Fallback on earlier versions
         }
@@ -874,29 +875,186 @@ extension CopterHudViewController: YuvSinkListener {
     
     func frameReady(sink: StreamSink, frame: SdkCoreFrame) {
         print("Sitesee YUVSinkListener FRAME READY")
-        
-        guard let metadataProtobuf = frame.metadataProtobuf else { return }
-        print("Sitesee metadata Protobuf:  \(metadataProtobuf)")
-        
+        frameCounter = frameCounter + 1
+        if frameCounter % 1 == 0 , self.isProcessingFrame == false {
         do {
-            let decodedInfo = try CameraData(serializedData: Data(metadataProtobuf))
+            guard let metadataProtobuf = frame.metadataProtobuf, let frameData = frame.data else { return }
+            print("Sitesee metadata Protobuf:  \(metadataProtobuf)")
+        
+        
+            let decodedInfo = try CameraData(serializedData: metadataProtobuf)
 //            print("Sitesee YUVSink INFOPanel - decodedInfo: \(decodedInfo)") // Prints the data continously
             
-            if let frameData = frame.data {
-                let data2 = Data(bytesNoCopy: UnsafeMutableRawPointer(mutating: frameData), count: frame.len, deallocator: .none )
-                print("Data2 is: \(data2)")
-//                UIImage(data: data2)
-                print("Doing the runmodel function now")
-                runModel(data2: data2)
+            self.isProcessingFrame = true
+            DispatchQueue.global(qos: .utility).async {
+                let imageSize = 1280 * 720
+                let dataSize = frame.len
+
+                let data2 = Data(bytes: frameData, count: dataSize)
                 
+                // start j
+                var RGBout = Data(count: 640*4*640*4)
+                let UOffset = imageSize
+                let VOffset = imageSize + 1
+                let numRows = 360
+                let numCols = 640
+                let side = (numCols - numRows) / 2
+                let startOne = DispatchTime.now()
+                
+                var step = 0
+                var stepUV = 0
+                var rgbOff = side * 640 * 4
+                // Loop takes 0.51-0.55 seconds
+                for row in 0..<numRows {
+                    for col in 0..<numCols {
+//                        let step = row * 2 * numCols * 2 + col * 2
+//                        let stepUV = row * 2 * numCols + col * 2
+                        let y = Int32(data2[step])
+                        let u = Int32(data2[UOffset + stepUV])
+                        let v = Int32(data2[VOffset + stepUV])
+                        step += 2
+                        stepUV += 2
+                        // got carried away and made these bitshifts instead of division.
+                        let Rvalue = y + ((5743 * (v - 128)) >> 12)
+                        let Gvalue = y - ((1409 * (u-128)) >> 12) - ((2925 * (v-128)) >> 12)
+                        let Bvalue = y + ((7258 * (u-128)) >> 12)
+                        
+//                        let rgbOff = ((row + side) * 640 + col) * 4
+                        rgbOff += 1
+                        RGBout[rgbOff] = Rvalue > 255 ? 255 : (Rvalue < 0 ? 0 : UInt8(Rvalue))
+                        rgbOff += 1
+                        RGBout[rgbOff] = Gvalue > 255 ? 255 : (Gvalue < 0 ? 0 : UInt8(Gvalue))
+                        rgbOff += 1
+                        RGBout[rgbOff] = Bvalue > 255 ? 255 : (Bvalue < 0 ? 0 : UInt8(Bvalue))
+                        rgbOff += 1
+                    }
+                    step += numCols * 2
+                    rgbOff += (640 - numCols) * 4
+                }
+                let endOne = DispatchTime.now()
+                
+                
+                // end j
+                    
+//                var Y_data: [Double] = []
+//                var U_data: [Double] = []
+//                var V_data: [Double] = []
+//
+////                    var Y_data: [Double] = Array(repeating: 0, count: imageSize)
+////                    var U_data: [Double] = Array(repeating: 0, count: imageSize)
+////                    var V_data: [Double] = Array(repeating: 0, count: imageSize)
+//
+////                var UV_Iter = UV.makeIterator()
+////                var count_step = 0
+////                var count_row = 0
+////
+////                for ii in 0..<Int(imageSize/2) {
+////
+////                    count_step = ii * 2
+////                    count_row = ((ii*2) + 1) + 1280
+////
+////                    let U_value = UV_Iter.next()!
+////                    let V_value = UV_Iter.next()!
+////
+//////                    count_step = ii * 1280
+//////                    Y_data.insert(Double(Y_value), at: ii)
+////                    U_data.insert(Double(U_value), at: count_step)
+////                    U_data.insert(Double(U_value), at: count_step+1)
+////
+////                    U_data.insert(Double(U_value), at: count_row)
+////                    U_data.insert(Double(U_value), at: count_row+1)
+////
+////                    V_data.insert(Double(V_value), at: count_step)
+////                    V_data.insert(Double(V_value), at: count_step+1)
+////
+////                    V_data.insert(Double(V_value), at: count_row)
+////                    V_data.insert(Double(V_value), at: count_row+1)
+////                }
+//
+//                Y.forEach() { value in
+//                    Y_data.append(Double(value))
+//                }
+//
+//                    UV.enumerated().forEach() { (index, value) in
+//                        if index % 2 == 0 {
+//                            U_data.append(Double(value))
+//                            U_data.append(Double(value))
+//                        }
+//                        else {
+//                            V_data.append(Double(value))
+//                            V_data.append(Double(value))
+//                        }
+//                    }
+//
+//                    let temp_U_data = U_data
+//                    let temp_V_data = V_data
+//
+//                    for ii in 0..<360 {
+//                        let step = ii * 1280
+//                        let rowStep = step + ii*1280
+//                        let U_rowData = temp_U_data[step..<(step+1280)]
+//                        U_data.insert(contentsOf: U_rowData, at: rowStep)
+//
+//                        let V_rowData = temp_V_data[step..<(step+1280)]
+//                        V_data.insert(contentsOf: V_rowData, at: rowStep)
+//
+//                    }
+//
+//                let filterY_Data = Y_data.enumerated().filter(){ $0.offset % 2 == 0 }
+//                let filterU_Data = U_data.enumerated().filter(){ $0.offset % 2 == 0 }
+//                let filterV_Data = V_data.enumerated().filter(){ $0.offset % 2 == 0 }
+//
+//
+//                print("Y Filter \(filterY_Data.count), Y: \(Y_data.count), U: \(U_data.count), V: \(V_data.count)")
+//
+//                let startRGBStuff = DispatchTime.now()
+//                    var RGBData: Data = Data(count: RGBimageSize)
+//                    rgbInd = 0
+//
+//                    for ii in (0..<(1280 * 720)) {
+//                        let Rvalue = Y_data[ii] + (1.402 * (V_data[ii] - 128))
+//                        let Gvalue = Y_data[ii] - (0.344 * (U_data[ii]-128)) - (0.714 * (V_data[ii]-128))
+//                        let Bvalue = Y_data[ii] + (1.772 * (U_data[ii]-128))
+//
+//                        let RClipValue: UInt8 = Rvalue > 255 ? 255 : (Rvalue < 0 ? 0 : UInt8(Rvalue))
+//                        let GClipValue: UInt8 = Gvalue > 255 ? 255 : (Gvalue < 0 ? 0 : UInt8(Gvalue))
+//                        let BClipValue: UInt8 = Bvalue > 255 ? 255 : (Bvalue < 0 ? 0 : UInt8(Bvalue))
+//
+//
+//                        RGBData[rgbInd] = 0
+//                        rgbInd += 1
+//                        RGBData[rgbInd] = UInt8(RClipValue)
+//                        rgbInd += 1
+//                        RGBData[rgbInd] = UInt8(GClipValue)
+//                        rgbInd += 1
+//                        RGBData[4*ii + 3] = UInt8(BClipValue)
+//                        rgbInd += 1
+//
+//                    }
+//
+//                let endRGBStuff = DispatchTime.now()
+//                print("Timer: YUV Stuff Run Time \(Double(startRGBStuff.uptimeNanoseconds - startThreadTime.uptimeNanoseconds) / 1_000_000_000)")
+//                print("Timer: RGB Stuff Run Time \(Double(endRGBStuff.uptimeNanoseconds - startRGBStuff.uptimeNanoseconds) / 1_000_000_000)")
+                print("Timer: One Stuff Run Time \(Double(endOne.uptimeNanoseconds - startOne.uptimeNanoseconds) / 1_000_000_000)")
+                
+                    print("Convert to Image from Frame")
+//                let startGetImageData = DispatchTime.now()
+                    let frameimage = self.createImageFromData(data2: RGBout, save: false, saveImageName: "SaveImage_3.png")
+//                let endGetImageData = DispatchTime.now()
+//                print("Timer: createImageFromData Run Time \(Double(endGetImageData.uptimeNanoseconds - startGetImageData.uptimeNanoseconds) / 1_000_000_000)")
+                
+    //                let frameimage = createImageFromImage(imageName: "JPEG image2.jpeg")
+                    print("Doing the runMLmodel function now")
+    //                runMLModel(image: frameimage)
+                
+                print("End FrameReady")
+                self.isProcessingFrame = false
+//                let endTime = DispatchTime.now()
+//                print("Timer: Dispatch Run Time \(Double(endTime.uptimeNanoseconds - startTime.uptimeNanoseconds) / 1_000_000_000)")
             }
         }
-        catch {
-            print("error handled in \(#function) where the data stream was accessed")
+        catch { print("error handled in \(#function) where the data stream was accessed") }
         }
-        
-        
-        
     }
     
     func didStart(sink: StreamSink) {
