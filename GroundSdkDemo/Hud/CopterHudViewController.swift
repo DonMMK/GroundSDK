@@ -362,18 +362,42 @@ class CopterHudViewController: UIViewController, DeviceViewController {
         print("Sitesee Run Model")
         guard let newimage = image else { print("Sitesee No Image Provided"); return }
 
+        /// TO DO; find a better solution to do the handler and request for images/ multiple images , make the reuqest a general one.
         let handler = VNImageRequestHandler(cgImage: (newimage.cgImage!))
         let request = VNCoreMLRequest(model: selectedVNModel!) { (request, error) in
                     print("Sitesee runMLModel Request: \(request)")
                     print("Sitesee runMLModel Error: \(error)")
         }
         
-        
+        request.imageCropAndScaleOption = .scaleFill
         do {
             try handler.perform([request])
             
             let observation = request.results?.first
-            print("Sitesee ML Results: \(observation)")
+            let observation2 = observation as? VNDetectedObjectObservation
+            
+            //print("Sitesee ML Results: \(observation2?.labels[0].identifier)")
+            print("Sitesee ML bb: \(observation2!.boundingBox)")
+            print("Sitesee ML bb minx: \(observation2!.boundingBox.minX) bb max y: \(1 - (observation2!.boundingBox.maxY)) ")
+            print("Sitesee ML bb width: \(observation2!.boundingBox.width) bb height: \(observation2!.boundingBox.height) ")
+            print("Sitesee ML bb origin: \(observation2!.boundingBox.origin) bb size: \(observation2!.boundingBox.size) ")
+            
+            // Use as center of the bounding box
+            print("Sitesee ML bb minx + width \(observation2!.boundingBox.minX + observation2!.boundingBox.width / 2)  bb min y + height: \(-1 * observation2!.boundingBox.minY - observation2!.boundingBox.height / 2 ) ")
+            
+            print("Sitesee ML confidence: \(observation2!.confidence)")
+            
+            // use as height and width
+            let flippedBox = CGRect(x: observation2!.boundingBox.minX, y: 1 - observation2!.boundingBox.maxY, width: observation2!.boundingBox.width, height: observation2!.boundingBox.height)
+            let box = VNImageRectForNormalizedRect(flippedBox, Int(newimage.cgImage!.width), Int(newimage.cgImage!.height))
+            print("SiteSee ML flippedbox: \(flippedBox) , box: \(box)")
+//            let y = observation2?.boundingBox
+//            y[:, 0] = (observation2?.boundingBox[:, 0] + observation2?.boundingBox[:, 2]) / 2  // x center
+//                y[:, 1] = (observation2?.boundingBox[:, 1] + observation2?.boundingBox[:, 3]) / 2  // y center
+//                y[:, 2] = observation2?.boundingBox[:, 2] - observation2?.boundingBox[:, 0]  // width
+//                y[:, 3] = observation2?.boundingBox[:, 3] - observation2?.boundingBox[:, 1]  // height
+            
+            
         } catch {
             print(error)
         }
@@ -847,6 +871,9 @@ class CopterHudViewController: UIViewController, DeviceViewController {
         }
         
     }
+    
+    
+
 
     @objc
     private func gamepadControllerIsConnected() {
@@ -1039,13 +1066,13 @@ extension CopterHudViewController: YuvSinkListener {
                 
                     print("Convert to Image from Frame")
 //                let startGetImageData = DispatchTime.now()
-                    let frameimage = self.createImageFromData(data2: RGBout, save: false, saveImageName: "SaveImage_3.png")
+                  //  let frameimage = self.createImageFromData(data2: RGBout, save: true, saveImageName: "SaveImage4.png")
 //                let endGetImageData = DispatchTime.now()
 //                print("Timer: createImageFromData Run Time \(Double(endGetImageData.uptimeNanoseconds - startGetImageData.uptimeNanoseconds) / 1_000_000_000)")
                 
-    //                let frameimage = createImageFromImage(imageName: "JPEG image2.jpeg")
+                let frameimage = self.createImageFromImage(imageName: "SaveImagev4.PNG")
                     print("Doing the runMLmodel function now")
-    //                runMLModel(image: frameimage)
+                self.runMLModel(image: frameimage)
                 
                 print("End FrameReady")
                 self.isProcessingFrame = false
