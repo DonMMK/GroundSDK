@@ -1,0 +1,30 @@
+PODS:
+  - ArsdkEngine (7.3.0):
+    - GroundSdk (= 7.3.0)
+    - SwiftProtobuf (= 1.13.0)
+  - GroundSdk (7.3.0):
+    - SdkCore (= 7.3.0)
+  - SdkCore (7.3.0)
+  - SwiftProtobuf (1.13.0)
+
+DEPENDENCIES:
+  - ArsdkEngine (= 7.3.0)
+  - GroundSdk (= 7.3.0)
+  - SdkCore (= 7.3.0)
+
+SPEC REPOS:
+  trunk:
+    - ArsdkEngine
+    - GroundSdk
+    - SdkCore
+    - SwiftProtobuf
+
+SPEC CHECKSUMS:
+  ArsdkEngine: 230df6eb3330fbc883f849911a23c8887961f573
+  GroundSdk: ccc69e6ef6fc952756c9d4380dcacbd6278acdb7
+  SdkCore: 55bc0a220a0f7a23e682818905d65669d70519d5
+  SwiftProtobuf: fd4693388a96c8c2df35d3b063272b0e7c499d00
+
+PODFILE CHECKSUM: a169b9640167a2a433556f9b578e5e6d7d02b3e1
+
+COCOAPODS: 1.11.3
